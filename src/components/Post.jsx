@@ -1,4 +1,7 @@
 import { HiDotsHorizontal } from "react-icons/hi";
+import { FiHeart } from "react-icons/fi";
+import { BsChatDots } from "react-icons/bs";
+import { MdBookmarkBorder } from "react-icons/md";
 
 export default function Post({ img, userImg, caption, username, id }) {
   return (
@@ -16,6 +19,14 @@ export default function Post({ img, userImg, caption, username, id }) {
       {/* Post Image */}
       <div>
         <img className="object-cover w-full" src={img} alt={id} />
+      </div>
+      {/* Post Buttons */}
+      <div className="flex justify-between px-4 pt-4">
+        <div className="flex space-x-4">
+          <FiHeart className="btn" />
+          <BsChatDots className="btn" />
+        </div>
+        <MdBookmarkBorder className="btn" />
       </div>
     </div>
   );
