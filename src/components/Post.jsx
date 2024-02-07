@@ -1,4 +1,4 @@
-import { HiDotsHorizontal } from "react-icons/hi";
+import { HiDotsHorizontal, HiOutlineEmojiHappy } from "react-icons/hi";
 import { FiHeart } from "react-icons/fi";
 import { BsChatDots } from "react-icons/bs";
 import { MdBookmarkBorder } from "react-icons/md";
@@ -28,6 +28,21 @@ export default function Post({ img, userImg, caption, username, id }) {
         </div>
         <MdBookmarkBorder className="btn" />
       </div>
+      {/* Post Caption */}
+      <p className="p-5 truncate">
+        <span className="font-bold mr-2">{username}</span>
+        {caption}
+      </p>
+      {/* Post Comments */}
+      <form className="flex items-center p-4">
+        <HiOutlineEmojiHappy className=" text-2xl" />
+        <input
+          className="flex-1 border-none focus:ring-0"
+          type="text"
+          placeholder="Enter your comment..."
+        />
+        <button className="text-blue-400 font-bold">Post</button>
+      </form>
     </div>
   );
 }
