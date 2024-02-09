@@ -13,7 +13,7 @@ export default function Posts() {
       }
     );
     return unsubscribe;
-  }, [db]);
+  }, [db, id]);
   return (
     <div>
       {posts.map((post) => (
