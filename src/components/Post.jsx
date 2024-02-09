@@ -1,15 +1,23 @@
 import { HiDotsHorizontal, HiOutlineEmojiHappy } from "react-icons/hi";
 import { FiHeart } from "react-icons/fi";
+import { FaHeart } from "react-icons/fa";
 import { BsChatDots } from "react-icons/bs";
 import { MdBookmarkBorder } from "react-icons/md";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  serverTimestamp,
+  setDoc,
+} from "firebase/firestore";
 import { db } from "../../firebase";
 
 export default function Post({ img, userImg, caption, username, id }) {
   const { data: session } = useSession();
   const [comment, setComment] = useState("");
+  const [hasLiked, setHasLiked] = useState(false);
+  const [likes, setLikes] = useState([]);
   async function sendComment(e) {
     e.preventDefault();
     const commentToSend = comment;
@@ -19,6 +27,11 @@ export default function Post({ img, userImg, caption, username, id }) {
       username: session.user.username,
       userImage: session.user.image,
       timestamp: serverTimestamp(),
+    });
+  }
+  async function likePost() {
+    await setDoc(doc(db, "posts", id, "likes", session.user.uid), {
+      username: session.user.username,
     });
   }
   return (
@@ -41,7 +54,12 @@ export default function Post({ img, userImg, caption, username, id }) {
       {session && (
         <div className="flex justify-between px-4 pt-4">
           <div className="flex space-x-4">
-            <FiHeart className="btn" />
+            {hasLiked ? (
+              <FaHeart onClick={likePost} className="btn text-red-400" />
+            ) : (
+              <FiHeart onClick={likePost} className="btn" />
+            )}
+
             <BsChatDots className="btn" />
           </div>
           <MdBookmarkBorder className="btn" />
