@@ -1,34 +1,36 @@
 import { useRecoilState } from "recoil";
-import { modalState } from "../../atom/modalAtom";
+import { modalState } from "../atom/modalAtom";
 import Modal from "react-modal";
-import { MdOutlinePhotoCamera } from "react-icons/md";
+import { CameraIcon } from "@heroicons/react/outline";
 import { useRef, useState } from "react";
 import {
   addDoc,
   collection,
+  doc,
   serverTimestamp,
   updateDoc,
 } from "firebase/firestore";
-import { db, storage } from "../../firebase";
-import { useSession } from "next-auth/react";
+import { db, storage } from "../firebase";
 import { getDownloadURL, ref, uploadString } from "firebase/storage";
+import { userState } from "../atom/userAtom";
 
 export default function UploadModal() {
   const [open, setOpen] = useRecoilState(modalState);
   const [selectedFile, setSelectedFile] = useState(null);
   const [loading, setLoading] = useState(false);
-  const { data: session } = useSession();
-  const filePickerRef = useRef(null);
-  const captionRef = useRef(null);
+  const [currentUser] = useRecoilState(userState)
   async function uploadPost() {
     if (loading) return;
+
     setLoading(true);
+
     const docRef = await addDoc(collection(db, "posts"), {
       caption: captionRef.current.value,
-      username: session.user.username,
-      profileImg: session.user.image,
+      username: currentUser?.username,
+      profileImg: currentUser.userImg,
       timestamp: serverTimestamp(),
     });
+
     const imageRef = ref(storage, `posts/${docRef.id}/image`);
     await uploadString(imageRef, selectedFile, "data_url").then(
       async (snapshot) => {
@@ -42,20 +44,24 @@ export default function UploadModal() {
     setLoading(false);
     setSelectedFile(null);
   }
-  function addImageToPost(e) {
+
+  function addImageToPost(event) {
     const reader = new FileReader();
-    if (e.target.files[0]) {
-      reader.readAsDataURL(e.target.files[0]);
+    if (event.target.files[0]) {
+      reader.readAsDataURL(event.target.files[0]);
     }
+
     reader.onload = (readerEvent) => {
-      selectedFile(readerEvent.target.result);
+      setSelectedFile(readerEvent.target.result);
     };
   }
+  const filePickerRef = useRef(null);
+  const captionRef = useRef(null);
   return (
     <div>
       {open && (
         <Modal
-          className="max-w-lg w-[90%] h-[300px] p-6 absolute top-56 left-[50%] translate-x-[-50%] bg-white border-2 rounded-md shadow-md"
+          className="max-w-lg w-[90%] p-6 absolute top-56 left-[50%] translate-x-[-50%] bg-white border-2 rounded-md shadow-md"
           isOpen={open}
           onRequestClose={() => {
             setOpen(false);
@@ -71,9 +77,9 @@ export default function UploadModal() {
                 className="w-full max-h-[250px] object-cover cursor-pointer"
               />
             ) : (
-              <MdOutlinePhotoCamera
+              <CameraIcon
                 onClick={() => filePickerRef.current.click()}
-                className="cursor-pointer bg-red-400 text-red-600 p-2 rounded-full border-2"
+                className="cursor-pointer h-14 bg-red-200 p-2 rounded-full border-2 text-red-500"
               />
             )}
 
@@ -85,15 +91,15 @@ export default function UploadModal() {
             />
             <input
               type="text"
-              maxLength={150}
-              placeholder="Add caption..."
-              className="m-4 border-none text-center focus:ring-0 w-full"
+              maxLength="150"
+              placeholder="Please enter your caption..."
+              className="m-4 border-none text-center w-full focus:ring-0"
               ref={captionRef}
             />
             <button
               disabled={!selectedFile || loading}
               onClick={uploadPost}
-              className="w-full bg-red-600 rounded text-white p-2 shadow-md hover:brightness-125 disabled:bg-gray-200 disabled:cursor-not-allowed disabled:hover:brightness-100"
+              className="w-full bg-red-600 text-white p-2 shadow-md hover:brightness-125 disabled:bg-gray-200 disabled:cursor-not-allowed disabled:hover:brightness-100"
             >
               Upload Post
             </button>

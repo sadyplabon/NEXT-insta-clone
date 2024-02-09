@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Post from "./Post";
-import { collection, onSnapshot, orderBy } from "firebase/firestore";
-import { db } from "../../firebase";
+import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
+import { db } from "../firebase";
 
 export default function Posts() {
   const [posts, setPosts] = useState([]);
@@ -13,7 +13,7 @@ export default function Posts() {
       }
     );
     return unsubscribe;
-  }, [db, id]);
+  }, [db]); 
   return (
     <div>
       {posts.map((post) => (
