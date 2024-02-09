@@ -5,8 +5,10 @@ import { PiPlusCircleBold } from "react-icons/pi";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { useRecoilState } from "recoil";
 import { modalState } from "../../atom/modalAtom";
+import { useRouter } from "next/router";
 
 export default function Header() {
+  const router = useRouter();
   const { data: session } = useSession();
   const [open, setOpen] = useRecoilState(modalState);
 
@@ -20,6 +22,7 @@ export default function Header() {
             layout="fill"
             className="object-contain"
             alt="instagram"
+            onClick={() => router.push("/")}
           />
         </div>
         <div className="h-24 w-10 relative lg:hidden cursor-pointer">
@@ -28,6 +31,7 @@ export default function Header() {
             layout="fill"
             className="object-contain"
             alt="instagram"
+            onClick={() => router.push("/")}
           />
         </div>
         <div className="relative mt-1">
@@ -44,7 +48,10 @@ export default function Header() {
         <div>
           {/* Right */}
           <div className="flex space-x-4 items-center">
-            <AiFillHome className="hidden md:inline-flex text-2xl cursor-pointer hover:scale-125 transition-transform duration-200" />
+            <AiFillHome
+              onClick={() => router.push("/")}
+              className="hidden md:inline-flex text-2xl cursor-pointer hover:scale-125 transition-transform duration-200"
+            />
             {session ? (
               <>
                 <PiPlusCircleBold
